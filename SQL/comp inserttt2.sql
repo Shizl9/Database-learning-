@@ -54,11 +54,11 @@ Values
 ('Sara', 'Hamad','1999-08-11','Female'),
 ('Omar', 'Saleh', '1996-03-2','Male');
 
-INSERT INTO Department1 (HiringDate, MngSSN, mDNUM)
-VALUES
-('2020-01-01', 1, NULL), 
+insert into Department(HiringDate, MnSSn , mDNUM)
+Values
+('2020-01-01',1, NULL), 
 ('2021-03-15', 2, 1),   
-('2022-06-10', 3, 1)    
+('2022-06-10',3,1);   
 
 INSERT INTO Project (Location, City, Pname, DNum)
 VALUES
