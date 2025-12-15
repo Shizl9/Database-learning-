@@ -1,9 +1,9 @@
-1) Company Database â€“ DQL & DML Tasks---
+--1) Company Database – DQL & DML Tasks---
 --1. Display all employee data--
 select*from Employee
 --Display employee first name, last name, salary, and department number--
 select fname,lname,salary,Dno from Employee
---Display each employeeâ€™s full name and their annual commission (10% of annual--
+--Display each employee’s full name and their annual commission (10% of annual--
 --salary) as ANNUAL_COMM--
 select fname + ' '+ lname as full_name,
 salary*12*0.10 as annual_comm from Employee
