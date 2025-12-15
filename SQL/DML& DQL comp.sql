@@ -31,3 +31,19 @@ FROM Employee
 select * from Employee where Fname LIKE 'A%'
 -- Display employees who have no supervisor--
 select* from Employee where Superssn is null
+--14. Insert your personal data into the employee table (Department = 30, SSN = 102672,
+--Superssn = 112233, Salary = 3000--
+insert into employee (fname,lname,SSN,bdate,address,Sex,Salary,Superssn,Dno)
+values( 'sheika','Albusafi',102672,'2001-04-10','albidayah','F',3000,112233,30)
+--15. Insert another employee (your friend) in department 30 with SSN = 102660, leaving--
+--salary and supervisor number NULL--
+insert into employee (fname,lname,SSN,bdate,address,Sex,Salary,Superssn,Dno)
+values( 'Elham','Alblushi',102660,'2002-03-05','alnabrah','F',null,null,30)
+--16. Update your salary by 20%.
+update Employee 
+set salary=salary*0.20
+--17. Increase salaries by 5% for all employees in department 30.
+update Employee
+set salary=Salary*0.05 where Dno=30
+--19. Delete employees with NULL salary.--
+delete from Employee where Salary=null
