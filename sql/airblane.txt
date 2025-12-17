@@ -1,0 +1,190 @@
+CREATE database airline
+use airline
+CREATE TABLE airport (
+airport_code VARCHAR(10) PRIMARY KEY,
+name NVARCHAR(30) NOT NULL,
+city NVARCHAR(30) NOT NULL,
+state NVARCHAR(30) NOT NULL
+)
+CREATE TABLE airplane_type (
+type_name NVARCHAR(30) PRIMARY KEY,
+company NVARCHAR(30) NOT NULL,
+max_seats INT NOT NULL
+)
+CREATE TABLE airplane (
+airplane_id INT PRIMARY KEY IDENTITY(1,1),
+total_seats INT NOT NULL,
+type_name NVARCHAR(30) NOT NULL,
+FOREIGN KEY (type_name) REFERENCES airplane_type(type_name)
+)
+CREATE TABLE flight (
+flight_no INT PRIMARY KEY identity(1,1),
+airline NVARCHAR(30) NOT NULL,
+weekdays NVARCHAR(20),
+restrictions NVARCHAR(50)
+)
+CREATE TABLE flight_leg (
+leg_no INT PRIMARY KEY identity(1,1),
+flight_no INT NOT NULL,
+scheduled_dep_time TIME NOT NULL,
+scheduled_arr_time TIME NOT NULL,
+dep_airport VARCHAR(10) NOT NULL,
+arr_airport VARCHAR(10) NOT NULL,
+FOREIGN KEY (flight_no) REFERENCES flight(flight_no),
+FOREIGN KEY (dep_airport) REFERENCES airport(airport_code),
+FOREIGN KEY (arr_airport) REFERENCES airport(airport_code)
+)
+CREATE TABLE leg_instance (
+leg_instance_id INT PRIMARY KEY IDENTITY(1,1),
+leg_no INT NOT NULL,
+flight_date DATE NOT NULL,
+dep_time TIME,
+arr_time TIME,
+airplane_id INT,
+FOREIGN KEY (leg_no) REFERENCES flight_leg(leg_no),
+FOREIGN KEY (airplane_id) REFERENCES airplane(airplane_id)
+)
+CREATE TABLE reservation (
+reservation_id INT PRIMARY KEY IDENTITY(1,1),
+customer_name NVARCHAR(40) NOT NULL,
+customer_phone NVARCHAR(20) NOT NULL,
+seat_no VARCHAR(5) NOT NULL,
+leg_instance_id INT NOT NULL,
+FOREIGN KEY (leg_instance_id) REFERENCES leg_instance(leg_instance_id)
+)
+CREATE TABLE fare (
+fare_code VARCHAR(10) PRIMARY KEY,
+flight_no INT NOT NULL,
+amount DECIMAL(8,2) NOT NULL,
+FOREIGN KEY (flight_no) REFERENCES flight(flight_no)
+)
+ALTER TABLE leg_instance
+ADD available_seats INT;
+
+ALTER TABLE reservation
+ALTER COLUMN customer_phone NVARCHAR(20) NULL;
+
+INSERT INTO airport (airport_code, name, city, state)
+VALUES
+('DQM', 'Duqm Airport', 'Duqm', 'Al Wusta'),
+('KHS', 'Khasab Airport', 'Khasab', 'Musandam');
+select * from airport
+
+INSERT INTO airplane_type (type_name, company, max_seats)
+VALUES
+('Bombardier Q400', 'Bombardier', 78),
+('Embraer E190', 'Embraer', 100);
+select * from airplane_type
+INSERT INTO airplane (total_seats, type_name)
+VALUES
+(78, 'Bombardier Q400'),
+(100, 'Embraer E190');
+select * from airplane
+
+INSERT INTO flight (airline, weekdays, restrictions)
+VALUES ('Gulf Air', 'Mon-Fri', 'No pets'),   -- هذه ستكون flight_no = 3
+       ('FlyDubai', 'Tue-Sun', 'None');     -- هذه ستكون flight_no = 4
+select * from flight
+
+INSERT INTO flight_leg (flight_no, scheduled_dep_time, scheduled_arr_time, dep_airport, arr_airport)
+VALUES
+(3, '10:00', '11:30', 'DQM', 'KHS'),
+(4, '14:00', '15:30', 'KHS', 'DQM');
+select * from flight_leg
+SELECT leg_no, flight_no FROM flight_leg;
+SELECT airplane_id, type_name FROM airplane;
+
+INSERT INTO leg_instance (leg_no, flight_date, dep_time, arr_time, airplane_id, available_seats)
+VALUES
+(2, '2025-12-23', '10:00', '11:30', 1, 78),  -- Bombardier Q400
+(3, '2025-12-23', '14:00', '15:30', 2, 100), -- Embraer E190
+(4, '2025-12-24', '09:00', '10:30', 1, 78),
+(5, '2025-12-24', '15:00', '16:30', 2, 100);
+
+select * from leg_instance
+
+INSERT INTO reservation (customer_name, customer_phone, seat_no, leg_instance_id)
+VALUES
+('Nora Al Balushi', '968-99887766', '4A', 4),
+('Khalid Al Harthy', NULL, '5B', 5);
+select * from reservation
+
+INSERT INTO fare (fare_code, flight_no, amount)
+VALUES
+('GF001', 3, 55.00),
+('FD001', 4, 65.00);
+select * from fare
+UPDATE leg_instance
+SET available_seats = 70
+WHERE leg_instance_id = 1;
+
+UPDATE leg_instance
+SET available_seats = 70
+WHERE leg_instance_id = 2;
+
+UPDATE leg_instance
+SET available_seats = 180
+WHERE leg_instance_id = 3;
+
+--3) Airline Database – DQL & DML Tasks 
+--DQL 
+--1. Display all flight leg records. 
+select * from flight_leg
+--2. Display each flight leg ID, scheduled departure time, and arrival time. 
+select leg_no,scheduled_dep_time,scheduled_arr_time from flight_leg
+--3. Display each airplane’s ID, type, and seat capacity. 
+select * from airplane
+--4. Display each flight leg’s ID and available seats as AvailableSeats. 
+SELECT leg_instance_id, available_seats AS AvailableSeats
+FROM leg_instance;
+--5. List flight leg IDs with available seats greater than 100.
+--not completed
+SELECT leg_instance_id, available_seats
+FROM leg_instance
+WHERE available_seats > 100;
+--6. List airplane IDs with seat capacity above 100. 
+SELECT airplane_id 
+FROM airplane
+WHERE total_seats > 100;
+--7. Display airport codes and names where city = 'Muscat'. 
+SELECT airport_code,name 
+FROM airport
+WHERE city ='Muscat';
+--8. Display flight legs scheduled on 2025-12-20. 
+SELECT * 
+FROM leg_instance
+WHERE flight_date ='2025-12-20';
+--9. Display flight legs ordered by departure time. 
+SELECT * 
+FROM flight_leg
+ORDER BY scheduled_dep_time;
+--10. Display the maximum, minimum, and average available seats. 
+SELECT 
+    MAX(available_seats) AS MaxSeats,
+    MIN(available_seats) AS MinSeats,
+    AVG(available_seats * 1.0) AS AvgSeats
+FROM leg_instance;
+--11. Display total number of flight legs. 
+SELECT COUNT(*) AS TotalFlightLegs
+FROM flight_leg;
+--12. Display airplanes whose type contains 'Boeing'.
+SELECT * 
+FROM airplane
+WHERE type_name LIKE '%Boeing%';
+--DML 
+--13. Insert a new flight leg departing from 'CAI' to 'DXB' on 2025-06-10. 
+--14. Insert a customer with NULL contact number. 
+INSERT INTO reservation (customer_name, customer_phosne, seat_no, leg_instance_id)
+VALUES ('Salim Al Hinai', NULL, '3A', 3);
+--15. Reduce available seats of your inserted flight leg by 5. 
+UPDATE leg_instance
+SET available_seats = available_seats - 5
+WHERE leg_instance_id = 2;
+--16. Increase available seats by 10 for all domestic flights. 
+--17. Update airplane seat capacity by +20 where capacity < 150. 
+UPDATE airplane
+SET total_seats = total_seats + 20
+WHERE total_seats < 150;
+--18. Delete canceled flight legs.
+DELETE FROM leg_instance
+WHERE available_seats = 2;
