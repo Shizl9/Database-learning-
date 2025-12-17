@@ -1,2 +1,2 @@
-# Database-learning-
+# Database-learning
 Data base course learning 
