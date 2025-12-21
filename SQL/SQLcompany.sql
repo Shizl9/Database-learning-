@@ -1,5 +1,5 @@
-create database companyDB;
-use companyDB;
+create database companyDB
+use companyDB
 create Table Employee1(
 SSN INT primary key identity(1,1 ),
 FirstName VARCHAR(50) NOT NULL,
@@ -60,28 +60,35 @@ VALUES
 ('2021-03-15', 2, 1),   
 ('2022-06-10', 3, 1)    
 
-INSERT INTO Project (Location, City, Pname, DNum)
+INSERT INTO Project (PNUM, Location, City, Pname, DNum)
 VALUES
-('Room A', 'Muscat', 'Project Alpha', 1),
-('Room B', 'ALsuwiq', 'Project Beta', 2),
-('Room C', 'Qurayyat', 'Project Gamma', 3);
+(101, 'Room A', 'Muscat', 'Project Alpha', 1),
+(102, 'Room B', 'ALsuwiq', 'Project Beta', 2),
+(103, 'Room C', 'Qurayyat', 'Project Gamma', 3);
+SELECT PNUM, Pname
+FROM Project;
 
 INSERT INTO MyWork (SSN, PNUM, Hours)
 VALUES
-(1, 1, 40),
-(2, 1, 20),
-(2, 2, 15),
-(3, 2, 30),
-(3, 3, 25);
-
+(1, 101, 40),
+(2, 101, 20),
+(2, 102, 15),
+(3, 102, 30),
+(3, 103, 25);
+SELECT *
+FROM Dependent;
+DELETE FROM Dependent;
 INSERT INTO Dependent (Dnum, SSN, Gender, Birthday)
 VALUES
-(1, 1, 'Male', '2010-05-10'),    
-(1, 2, 'Female', '2012-07-20'), 
-(2, 3, 'Male', '2005-11-15');  
+(1, 1, 'Male', '2010-05-10'),
+(1, 2, 'Female', '2012-07-20'),
+(2, 3, 'Male', '2005-11-15'); 
+
+DELETE FROM Locations;
 
 INSERT INTO Locations (Dnum, Location)
 VALUES
 (1, 'Head Office'),
 (2, 'Branch Office A'),
 (3, 'Branch Office B');
+
