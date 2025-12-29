@@ -1,0 +1,90 @@
+--1. NTILE – What it is and how it works
+
+--NTILE(n) is a window function used to divide rows into n roughly equal groups (buckets).
+-- What NTILE does?
+--Splits ordered data into n groups
+--Assigns a group number starting from 1
+--Commonly used for ranking, percentiles, grading, or segmentation
+--code:
+NTILE(n) OVER (ORDER BY column_name)
+
+-- Example:
+
+--Suppose you want to divide students into 4 quartiles based on score:
+
+SELECT
+    student_name,
+    score,
+    NTILE(4) OVER (ORDER BY score DESC) AS quartile
+FROM Students;
+
+--Result idea
+--student_name	score	quartile
+--Alex	         95	      1
+--Sam            90	      1
+--Jordan	     82	      2
+--Taylor	     75	      3
+--Casey	         60	      4
+
+--✔ Higher scores → lower quartile number (because of DESC)
+
+-- Common uses:
+--Divide customers into spending tiers
+--Rank employees by performance
+--Split data into percentiles
+
+--2️. Stored Procedure Transactions
+--A transaction ensures that a group of SQL operations either:
+--All succeed, or
+--All fail and roll back
+--This is very important for data safety.
+-- Key transaction commands
+BEGIN TRANSACTION
+COMMIT
+ROLLBACK
+
+--3.Transaction inside a Stored Procedure
+--A stored procedure can contain a transaction to control multiple SQL statements.
+-- Basic Example (SQL Server style)
+
+CREATE PROCEDURE TransferMoney
+    @FromAccount INT,
+    @ToAccount INT,
+    @Amount DECIMAL(10,2)
+AS
+BEGIN
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        UPDATE Accounts
+        SET Balance = Balance - @Amount
+        WHERE AccountID = @FromAccount;
+
+        UPDATE Accounts
+        SET Balance = Balance + @Amount
+        WHERE AccountID = @ToAccount;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+    END CATCH
+END;
+
+--What’s happening
+--.Money is deducted from one account
+--.Added to another
+--.If any step fails, everything is undone
+
+--4️. Why transactions in stored procedures matter
+
+--✅ Prevents partial updates
+--✅ Protects data consistency
+--✅ Essential for banking, orders, inventory, etc.
+
+--5️. NTILE vs Transactions (quick comparison)
+--Feature	       NTILE	            Transaction
+--Purpose	    Ranking / grouping	       Data safety
+--Used in	       SELECT queries	      INSERT / UPDATE / DELETE
+--Affects data   	❌ No	               ✅ Yes
+--Common place	    Reports, analytics  	 Stored procedures
